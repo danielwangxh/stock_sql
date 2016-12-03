@@ -91,19 +91,20 @@ class command(object):
 
     def command_entry_command(self,event):
         self.command=self.command_entry.get().strip()
-        command_mark=self.command.split(' ')[0:1]
-        print (command_mark)
-        self.values={'select':self.show_text.insert('1.0',zghp_command_show(self.command)),
-                     'add':print('1')}
+        command_mark=self.command.split(' ')[0]
+        self.values={"select":zghp_command_show,
+                     "add":mysql_add}
         if self.command=='':
             messagebox.showinfo(message='«Î ‰»Î√¸¡Ó')
         else:
-              self.values.get(str(command_mark))
+              self.show_text.insert(END,self.values.get(str(command_mark))(self.command))
               self.command_entry.delete(0,END)
 
 
 
-def mysql_add(date,index):
+def mysql_add(command):
+    index=command.split(' ')[-1]
+    date=command.split(' ')[1]
     cursor.execute("truncate table zg6hp_temp")
     cursor.execute("truncate table zg7hp_temp")
     sql="truncate table add_temp"
@@ -288,6 +289,7 @@ def mysql_add(date,index):
                 break
     print('zg7hp success')
     print('finish')
+    return("success")
     db.commit()
 
 
