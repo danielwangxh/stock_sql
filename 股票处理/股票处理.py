@@ -36,14 +36,14 @@ class main(object):
         self.add_button=Button(master,text='输入股票数据',width=30, command=self.add_button_command)
         self.add_button.grid(row=1,column=0)
 
-        self.zg7hp_button=Button(master,text='zghp',command=self.zghp_button_command,width=30)
-        self.zg7hp_button.grid(row=2,columnspan=100)
+        self.command_button=Button(master,text='命令行',command=self.command_button_command,width=30)
+        self.command_button.grid(row=2,columnspan=100)
 
     def add_button_command(self):
         add(self.master)
 
-    def zghp_button_command(self):
-        zghp(self.master)
+    def command_button_command(self):
+        command(self.master)
 
 
 class add(object):
@@ -74,7 +74,7 @@ class add(object):
         mysql_add(self.date,self.index)
         self.add_page.destroy()
 
-class zghp(object):
+class command(object):
     def __init__(self,master):
         self.zg7hp_page=Toplevel(master)
 
@@ -91,11 +91,15 @@ class zghp(object):
 
     def command_entry_command(self,event):
         self.command=self.command_entry.get().strip()
+        command_mark=self.command.split(' ')[0:1]
+        print (command_mark)
+        self.values={'select':self.show_text.insert('1.0',zghp_command_show(self.command)),
+                     'add':print('1')}
         if self.command=='':
-            messagebox.showinfo(message='请输入日期')
+            messagebox.showinfo(message='请输入命令')
         else:
-            self.show_text.insert('1.0',zghp_command_show(self.command))
-            self.command_entry.delete(0,END)
+              self.values.get(str(command_mark))
+              self.command_entry.delete(0,END)
 
 
 
@@ -288,6 +292,7 @@ def mysql_add(date,index):
 
 
 def zghp_command_show(command):
+    print(command)
     number=command.split(' ')[-1]
     command=command.rstrip(number)
     command=command.lstrip('select *')
