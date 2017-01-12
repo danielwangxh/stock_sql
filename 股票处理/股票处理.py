@@ -33,9 +33,6 @@ class main(object):
         self.mainlabel=Label(master,text='今天的日期是：'+str(date.today()),font=('Alrial,12'),justify=CENTER)
         self.mainlabel.grid(row=0,columnspan=100,rowspan=1)
 
-        self.add_button=Button(master,text='输入股票数据',width=30, command=self.add_button_command)
-        self.add_button.grid(row=1,column=0)
-
         self.command_button=Button(master,text='命令行',command=self.command_button_command,width=30)
         self.command_button.grid(row=2,columnspan=100)
 
@@ -45,34 +42,6 @@ class main(object):
     def command_button_command(self):
         command(self.master)
 
-
-class add(object):
-    def __init__(self,master):
-        self.add_page=Toplevel(master)
-
-        self.date_label=Label(self.add_page,text='请输入添加的日期')
-        self.date_label.grid(row=0,column=0,sticky=W)
-        self.date_entry=Entry(self.add_page)
-        self.date_entry.grid(row=0,column=1,sticky=E)
-
-        self.index_entry=Label(self.add_page,text='请输入指数')
-        self.index_entry.grid(row=1,column=0,sticky=W)
-        self.index_entry=Entry(self.add_page)
-        self.index_entry.grid(row=1,column=1,sticky=E)
-
-        self.date_button=Button(self.add_page,text='计算',command=self.date_button_command,width=40)
-        self.date_button.grid(row=2,columnspan=2)
-
-
-    def date_button_command(self):
-        self.date=self.date_entry.get().strip()
-        self.index=self.index_entry.get().strip()
-        if self.date=='':
-            messagebox.showinfo(message='请输入日期')
-        if self.index=='':
-            messagebox.showinfo(message='请输指数')
-        mysql_add(self.date,self.index)
-        self.add_page.destroy()
 
 class command(object):
     def __init__(self,master):
@@ -243,7 +212,8 @@ def mysql_add(command):
     cursor.execute("select 代码,名称,现价,每股收益,每股价值,行业,系数6 from zg6hp_temp where 系数6!=0 order by 系数6 ")
     temp=cursor.fetchall()
     i=1
-    cursor.execute("insert into zg6hp (日期) values('{0}') ".format(date))
+    cursor.execute("insert into zg6hp (日期) values({0}) ".format(date))
+    db.commit()
     for temp_temp in temp:
         content=temp_temp[0]+'/'+temp_temp[1]+'/'+str(temp_temp[2])+'/'+str(temp_temp[3])+'/'+str(temp_temp[4])+'/'+temp_temp[5]+'/'+str(temp_temp[6])
         if i<=30:
@@ -251,6 +221,7 @@ def mysql_add(command):
             i=i+1
         else:
             break
+    db.commit();
     print("zg6hp success")
 
     cursor.execute("select 日期,代码,系数7 from zg7hp_temp order by 系数7 " )
@@ -275,6 +246,7 @@ def mysql_add(command):
     j=1
     cursor.execute("insert into zg7hp (日期) values('{0}') ".format(date))
     cursor.execute("insert into zg8hp (日期) values('{0}') ".format(date))
+    db.commit()
     for temp_temp in temp:
         content=temp_temp[0]+'/'+temp_temp[1]+'/'+str(temp_temp[2])+'/'+str(temp_temp[3])+'/'+str(temp_temp[4])+'/'+temp_temp[5]+'/'+str(temp_temp[6])
         if i<=30:
@@ -287,10 +259,10 @@ def mysql_add(command):
                 j=j+1
             else:
                 break
+    db.commit()
     print('zg7hp success')
     print('finish')
     return("success")
-    db.commit()
 
 
 def zghp_command_show(command):
